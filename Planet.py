@@ -1,6 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+
 from sqlalchemy import Column, Integer, String, Float
 from app import db
+
 
 class Planet(db.Model):
     __tablename__ = "planets"
@@ -9,6 +10,6 @@ class Planet(db.Model):
     planet_type = Column(String)
     home_start = Column(String)
     password = Column(String)
-    mass = Column(float)
-    radius = Column(float)
-    distance = Column(float)
+    mass = Column(Float)
+    radius = Column(Float)
+    distance = Column(Float)
