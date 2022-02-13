@@ -2,14 +2,18 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, Float
 import os
-
-from Planet import Planet
-from User import User
+from flask_marshmallow import Marshmallow
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite///' + os.path.join(basedir, 'planets.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'planets.db')
 db = SQLAlchemy(app)
+ma = Marshmallow(app)
+
+
+from Planet import Planet, planet_schema, planets_schema
+from User import User, user_schema, users_schema
+
 
 
 @app.cli.command("db_create")
@@ -28,21 +32,21 @@ def db_drop():
 def db_seed():
     mercury = Planet(planet_name="Mercury",
                      planet_type="Class D",
-                     home_star="Home Star",
+                     home_start="Home Star",
                      mass=3.258e23,
                      radius=1516,
                      distance=35.98e6)
 
     venus = Planet(planet_name="Venus",
                      planet_type="Class K",
-                     home_star="Sol",
+                     home_start="Sol",
                      mass=4.458e23,
                      radius=10046,
                      distance=20.98e6)
 
     earth = Planet(planet_name="Mercury",
                      planet_type="Class A",
-                     home_star="Sol",
+                     home_start="Sol",
                      mass=1.258e23,
                      radius=100,
                      distance=10.98e6)
@@ -93,6 +97,13 @@ def parameters(name: str, age: int):  # put application's code here
         return jsonify(message='Sorry ' + name + "you are not old enough."), 401
     else:
         return jsonify(message='Congrats ' + name + "you are not old enough.")
+
+
+@app.route('/planets', methods=['GET'])
+def planets():
+    planets_list = Planet.query.all()
+    result = planets_schema.dump(planets_list)
+    return jsonify(result)
 
 
 if __name__ == '__main__':

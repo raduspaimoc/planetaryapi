@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String
-from app import db
+from app import db, ma
 
 
 class User(db.Model):
@@ -9,3 +9,12 @@ class User(db.Model):
     last_name = Column(String)
     email = Column(String, unique=True)
     password = Column(String)
+
+
+class UserSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'first_name', 'last_name', 'email', 'password')
+
+
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
